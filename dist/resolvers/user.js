@@ -68,7 +68,7 @@ UserResponse = __decorate([
     type_graphql_1.ObjectType()
 ], UserResponse);
 let UserResolver = class UserResolver {
-    register(options, { em }) {
+    register(options, { em, req }) {
         return __awaiter(this, void 0, void 0, function* () {
             const { username, password } = options;
             if (username.length <= 2) {
@@ -109,6 +109,7 @@ let UserResolver = class UserResolver {
                 }
                 console.log(err);
             }
+            req.session.userId = user.id;
             return {
                 user,
             };
@@ -117,7 +118,7 @@ let UserResolver = class UserResolver {
     users({ em }) {
         return em.find(User_1.User, {});
     }
-    login(options, { em }) {
+    login(options, { em, req }) {
         return __awaiter(this, void 0, void 0, function* () {
             const { username, password } = options;
             const user = yield em.findOne(User_1.User, { username });
@@ -142,9 +143,19 @@ let UserResolver = class UserResolver {
                     ],
                 };
             }
+            req.session.userId = user.id;
             return {
                 user,
             };
+        });
+    }
+    me({ em, req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!req.session.userId) {
+                return null;
+            }
+            const user = yield em.findOne(User_1.User, { id: req.session.userId });
+            return user;
         });
     }
 };
@@ -171,6 +182,13 @@ __decorate([
     __metadata("design:paramtypes", [UsernamePasswordInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "login", null);
+__decorate([
+    type_graphql_1.Query(() => User_1.User, { nullable: true }),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "me", null);
 UserResolver = __decorate([
     type_graphql_1.Resolver()
 ], UserResolver);
