@@ -1,11 +1,11 @@
 import "reflect-metadata";
-import {HelloResolver} from "./resolvers/hello";
 import {__prod__} from "./constants";
 import {MikroORM} from "@mikro-orm/core";
 import microConfig from "./mikro-orm.config";
 import express from "express";
 import {ApolloServer} from "apollo-server-express";
 import {buildSchema} from "type-graphql";
+import {PostResolver} from "./resolvers/post";
 
 (async () => {
     const orm = await MikroORM.init(microConfig);
@@ -15,8 +15,11 @@ import {buildSchema} from "type-graphql";
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [HelloResolver],
+            resolvers: [PostResolver],
             validate: false,
+        }),
+        context: () => ({
+            em: orm.em,
         }),
     });
 
@@ -26,7 +29,7 @@ import {buildSchema} from "type-graphql";
         console.log("Server started on port 4000");
     });
 
-    // const post = orm.em.create(Post, {title: "Post2"});
+    // const post = orm.em.create(Post, {title: "Post1"});
     // await orm.em.persistAndFlush(post);
 
     // const posts = await orm.em.find(Post, {});
