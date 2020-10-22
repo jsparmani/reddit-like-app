@@ -12,6 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+const user_1 = require("./resolvers/user");
 require("reflect-metadata");
 const core_1 = require("@mikro-orm/core");
 const mikro_orm_config_1 = __importDefault(require("./mikro-orm.config"));
@@ -25,7 +26,7 @@ const post_1 = require("./resolvers/post");
     const app = express_1.default();
     const apolloServer = new apollo_server_express_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({
-            resolvers: [post_1.PostResolver],
+            resolvers: [post_1.PostResolver, user_1.UserResolver],
             validate: false,
         }),
         context: () => ({

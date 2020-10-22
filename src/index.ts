@@ -1,3 +1,4 @@
+import {UserResolver} from "./resolvers/user";
 import "reflect-metadata";
 import {__prod__} from "./constants";
 import {MikroORM} from "@mikro-orm/core";
@@ -15,7 +16,7 @@ import {PostResolver} from "./resolvers/post";
 
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
-            resolvers: [PostResolver],
+            resolvers: [PostResolver, UserResolver],
             validate: false,
         }),
         context: () => ({
