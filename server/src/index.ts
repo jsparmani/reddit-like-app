@@ -8,16 +8,23 @@ import express from "express";
 import {ApolloServer} from "apollo-server-express";
 import {buildSchema} from "type-graphql";
 import {PostResolver} from "./resolvers/post";
-
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
+import cors from "cors";
 
 (async () => {
     const orm = await MikroORM.init(microConfig);
     await orm.getMigrator().up();
 
     const app = express();
+
+    app.use(
+        cors({
+            credentials: true,
+            origin: "http://localhost:3000",
+        })
+    );
 
     const RedisStore = connectRedis(session);
     const redisClient = redis.createClient();
@@ -53,7 +60,10 @@ import connectRedis from "connect-redis";
         }),
     });
 
-    apolloServer.applyMiddleware({app});
+    apolloServer.applyMiddleware({
+        app,
+        cors: false,
+    });
 
     app.listen(4000, () => {
         console.log("Server started on port 4000");
